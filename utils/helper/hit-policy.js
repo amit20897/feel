@@ -178,9 +178,16 @@ const prepareOutputOrder = (output, priorityList) => {
   return outputList;
 };
 
+function createPriorityList(rules) {
+  return rules.map((rule) => {
+    return { [rule]: parseInt(rule.slice(4)) };
+  });
+}
+
 const getOrderedOutput = (root, outputList) => {
   const policy = root.hitPolicy.charAt(0);
   let outputOrderedList = [];
+  let priorityList;
   switch (policy) {
     case 'P':
       outputOrderedList.push(prepareOutputOrder(outputList, root.priorityList)[0]);
@@ -189,10 +196,12 @@ const getOrderedOutput = (root, outputList) => {
       outputOrderedList = prepareOutputOrder(outputList, root.priorityList);
       break;
     case 'F':
-      outputOrderedList = outputList.sort().slice(0, 1);
+      priorityList = createPriorityList(outputList);
+      outputOrderedList = prepareOutputOrder(outputList, priorityList).slice(0, 1);
       break;
     case 'R':
-      outputOrderedList = outputList.sort();
+      priorityList = createPriorityList(outputList);
+      outputOrderedList = prepareOutputOrder(outputList, priorityList);
       break;
     default :
       outputOrderedList = outputList;
